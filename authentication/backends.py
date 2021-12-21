@@ -1,6 +1,7 @@
 import jwt
-from rest_framework import authentication
+from rest_framework import authentication, exceptions
 from django.conf import settings
+from django.contrib.auth.models import User
 
 class JWTAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
@@ -10,6 +11,11 @@ class JWTAuthentication(authentication.BaseAuthentication):
         prefix, token = auth_data.decode('utf-8').split(' ')
         try:
             payload=jwt.deocde(token, settings.JWT_SECRET_KEY)
-        except expression as identifier:
-            pass
+            user = User.objects.get(username=payload['username'])
+            return (user, token)
+        except jwt.DecodeError as identifier:
+            raise exceptions.AuthenticatioNFailed('Your token is invalid. Please Login!')
+        except jwt.ExpiredSignatureError as identifier:
+            raise exceptions.AuthenticatioNFailed('Your token is expired. Please Login again!')
         return super().authenticate(request)
+    
