@@ -17,7 +17,7 @@ class ContactsList(ListCreateAPIView):
 
 class ContactsDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ContactSerializer
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = (permissions.IsAuthenticated, )
     lookup_field = "id" # /contacts/1 (search like this)    
     
     def get_queryset(self):
